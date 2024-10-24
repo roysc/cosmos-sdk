@@ -282,6 +282,7 @@ func (b routerBuilder) BuildQueryRouter() router.Service {
 // - store/v2/root.Builder
 // - branch.Service
 // - RouterServiceBuilder
+// - gas.Service
 //
 // They are all required.  For most use cases these default services bindings should be sufficient.
 // Power users (or tests) may wish to provide their own services bindings, in which case they must

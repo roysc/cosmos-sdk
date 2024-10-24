@@ -71,8 +71,8 @@ message MsgInitResponse {}
 
 Next, we implement the Init method, which sets the initial counter. We also implement a method of the `Account` interface. This method:
 
-Signals to the x/accounts runtime what the Init entrypoint is
-Performs some generic operations to maintain type safety in the system
+* Signals to the x/accounts runtime what the Init entrypoint is
+* Performs some generic operations to maintain type safety in the system
 
 Here's the Go implementation:
 
@@ -517,10 +517,10 @@ address = sha256(ModuleName || creator_address || next_account_number)
 
 ### Address Seed Best Practices
 
-1. Address seeds must be unique per creator (not globally unique)
-2. Reusing an address seed will cause account creation to fail
-3. For programmatic account creation, use an incrementing sequence number as the address seed
-4. This is particularly useful for contracts or modules that need deterministic address generation
+1. Address seeds must be unique per creator (not globally unique).
+2. Reusing an address seed will cause account creation to fail.
+3. For programmatic account creation, use an incrementing sequence number as the address seed. This
+   is particularly useful for contracts or modules that need deterministic address generation.
 
 ## Genesis
 
