@@ -172,7 +172,7 @@ func (b BankModule) RegisterMsgHandlers(router core_appmodule.MsgHandlerRouter) 
 ```
 
 This change is fully state machine compatible as, even if we were using gRPC, messages were
-routed using the message type name and not the gRCP method name.
+routed using the message type name and not the gRPC method name.
 
 We apply the same principles of MsgHandlers to QueryHandlers, by introducing a new core/appmodule interface:
 

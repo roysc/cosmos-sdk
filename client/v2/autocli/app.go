@@ -49,7 +49,7 @@ type AppOptions struct {
 }
 
 // EnhanceRootCommand enhances the provided root command with autocli AppOptions,
-// only adding missing commands and doesn't override commands already
+// only adding missing commands without overriding commands already
 // in the root command. This allows for the graceful integration of autocli with
 // existing app CLI commands where autocli simply automatically adds things that
 // weren't manually provided. It does take into account custom commands

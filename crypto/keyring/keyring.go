@@ -110,10 +110,10 @@ type Keyring interface {
 
 // Signer is implemented by key stores that want to provide signing capabilities.
 type Signer interface {
-	// Sign sign byte messages with a user key.
+	// Sign signs byte messages with a user key.
 	Sign(uid string, msg []byte, signMode apisigning.SignMode) ([]byte, types.PubKey, error)
 
-	// SignByAddress sign byte messages with a user key providing the address.
+	// SignByAddress signs byte messages with a user key providing the address.
 	SignByAddress(address, msg []byte, signMode apisigning.SignMode) ([]byte, types.PubKey, error)
 }
 

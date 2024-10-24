@@ -19,11 +19,17 @@ message MsgInitLockupAccount {
   // owner of the vesting account
   string owner = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   // end_time is end of lockup
-  google.protobuf.Timestamp end_time = 2
-      [(gogoproto.nullable) = false, (amino.dont_omitempty) = true, (gogoproto.stdtime) = true];
+  google.protobuf.Timestamp end_time = 2 [
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true,
+    (gogoproto.stdtime) = true
+  ];
   // start_time is start of lockup
-  google.protobuf.Timestamp start_time = 3
-      [(gogoproto.nullable) = false, (amino.dont_omitempty) = true, (gogoproto.stdtime) = true];
+  google.protobuf.Timestamp start_time = 3 [
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true,
+    (gogoproto.stdtime) = true
+  ];
 }
 
 // MsgInitLockupAccountResponse defines the Msg/InitLockupAccount response type.
@@ -38,8 +44,11 @@ message MsgInitPeriodicLockingAccount {
   // owner of the lockup account
   string owner = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
   // start of lockup
-  google.protobuf.Timestamp start_time = 2
-      [(gogoproto.nullable) = false, (amino.dont_omitempty) = true, (gogoproto.stdtime) = true];
+  google.protobuf.Timestamp start_time = 2 [
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true,
+    (gogoproto.stdtime) = true
+  ];
   repeated Period locking_periods = 3 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
 }
 

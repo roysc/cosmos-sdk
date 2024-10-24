@@ -10,11 +10,14 @@ import "google/protobuf/timestamp.proto";
 
 option go_package = "cosmossdk.io/x/accounts/defaults/lockup/v1";
 
-// Period defines a length of time and amount of coins that will be lock.
+// Period defines a length of time and amount of coins that will be locked.
 message Period {
   // Period duration
-  google.protobuf.Duration length = 1
-      [(gogoproto.nullable) = false, (amino.dont_omitempty) = true, (gogoproto.stdduration) = true];
+  google.protobuf.Duration length = 1 [
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true,
+    (gogoproto.stdduration) = true
+  ];
   repeated cosmos.base.v1beta1.Coin amount = 2 [
     (gogoproto.nullable)     = false,
     (amino.dont_omitempty)   = true,

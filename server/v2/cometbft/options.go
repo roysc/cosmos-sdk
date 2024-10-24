@@ -15,7 +15,7 @@ import (
 type keyGenF = func() (cmtcrypto.PrivKey, error)
 
 // ServerOptions defines the options for the CometBFT server.
-// When an option takes a map[string]any, it can access the app.tom's cometbft section and the config.toml config.
+// When an option takes a map[string]any, it can access the app.toml's cometbft section and the config.toml config.
 type ServerOptions[T transaction.Tx] struct {
 	PrepareProposalHandler     handlers.PrepareHandler[T]
 	ProcessProposalHandler     handlers.ProcessHandler[T]

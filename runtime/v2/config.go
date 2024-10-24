@@ -16,7 +16,7 @@ import (
 // objects are module-scoped and `GlobalConfig` is global-scoped.
 type GlobalConfig server.ConfigMap
 
-// ModuleConfigMaps is a map module scoped ConfigMaps
+// ModuleConfigMaps is a map of module-scoped ConfigMaps
 type ModuleConfigMaps map[string]server.ConfigMap
 
 // ProvideModuleConfigMaps returns a map of module name to module config map.

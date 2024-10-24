@@ -250,7 +250,9 @@ func newBalancesIndexes(sb *collections.SchemaBuilder) BalancesIndexes {
 		Denom: indexes.NewReversePair[math.Int](
 			sb, types.DenomAddressPrefix, "address_by_denom_index",
 			collections.PairKeyCodec(collections.BytesKey, collections.StringKey),
-			indexes.WithReversePairUncheckedValue(), // denom to address indexes were stored as Key: Join(denom, address) Value: []byte{0}, this will migrate the value to []byte{} in a lazy way.
+			// denom to address indexes were stored as Key: Join(denom, address) Value: []byte{0},
+			// this will migrate the value to []byte{} in a lazy way.
+			indexes.WithReversePairUncheckedValue(),
 		),
 	}
 }
