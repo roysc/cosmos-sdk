@@ -123,6 +123,8 @@ func (b *Builder) AddMsgServiceCommands(cmd *cobra.Command, cmdDescriptor *autoc
 // BuildMsgMethodCommand returns a command that outputs the JSON representation of the message.
 func (b *Builder) BuildMsgMethodCommand(descriptor protoreflect.MethodDescriptor, options *autocliv1.RpcCommandOptions) (*cobra.Command, error) {
 	execFunc := func(cmd *cobra.Command, input protoreflect.Message) error {
+		// panic(fmt.Sprintf(">> (DEBUG) generated cli command for %+v", input))
+
 		clientCtx, err := client.GetClientTxContext(cmd)
 		if err != nil {
 			return err
@@ -171,6 +173,7 @@ func (b *Builder) BuildMsgMethodCommand(descriptor protoreflect.MethodDescriptor
 		return clienttx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 	}
 
+	// panic("(DEBUG) adding msg method command")
 	cmd, err := b.buildMethodCommandCommon(descriptor, options, execFunc)
 	if err != nil {
 		return nil, err

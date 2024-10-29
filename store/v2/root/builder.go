@@ -66,6 +66,7 @@ func (sb *builder) Build(
 		filepath.Join(config.Home, "data"),
 		nil,
 	)
+	fmt.Printf("new db: type: %s, location: %s\n", config.AppDBBackend, filepath.Join(config.Home, "data"))
 	if err != nil {
 		return nil, fmt.Errorf("failed to create SCRawDB: %w", err)
 	}

@@ -71,7 +71,7 @@ func (gs GenesisState) Validate(addrCodec address.Codec) error {
 		}
 
 		if !gs.Supply.Equal(totalSupply) {
-			return fmt.Errorf("genesis supply is incorrect, expected %v, got %v", gs.Supply, totalSupply)
+			return fmt.Errorf("(types) genesis supply is incorrect, expected %v, got %v", gs.Supply, totalSupply)
 		}
 	}
 
