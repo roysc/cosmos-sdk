@@ -90,6 +90,7 @@ func New[T transaction.Tx](
 		ConfigTomlConfig: configTomlConfig,
 		AppTomlConfig:    appTomlConfig,
 	}
+	fmt.Println("COMET CONFIG COMMIT TIMEOUT:", configTomlConfig.Consensus.TimeoutCommit)
 
 	chainID, _ := cfg[FlagChainID].(string)
 	if chainID == "" {
