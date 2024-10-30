@@ -15,7 +15,7 @@ import (
 
 var ErrNoHandler = errors.New("no handler")
 
-// NewMsgRouterBuilder is a router that routes messages to their respective handlers.
+// NewMsgRouterBuilder is used to build a router that routes messages to their respective handlers.
 func NewMsgRouterBuilder() *MsgRouterBuilder {
 	return &MsgRouterBuilder{
 		handlers:     make(map[string]appmodulev2.HandlerFunc),

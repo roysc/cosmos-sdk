@@ -143,7 +143,7 @@ type HasQueryHandlers interface {
 // Example usage:
 // ```go
 //
-//	func (h Handlers) Mint(ctx context.Context, req *types.MsgMint) (*types.MsgMintResponse, error) {
+//	func (h Handlers) MsgMint(ctx context.Context, req *types.MsgMint) (*types.MsgMintResponse, error) {
 //	      ... msg logic ...
 //	}
 //

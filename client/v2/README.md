@@ -77,7 +77,7 @@ if err := rootCmd.Execute(); err != nil {
 
 #### Keyring
 
-`autocli` uses a keyring for key name resolving names and signing transactions.
+`autocli` uses a keyring for resolving key names and signing transactions.
 
 :::tip
 AutoCLI provides a better UX than normal CLI as it allows to resolve key names directly from the keyring in all transactions and commands.
