@@ -6,11 +6,11 @@ sidebar_position: 1
 
 ## AutoCLI
 
-:::note Synopsis
+::: note Synopsis
 This document details how to build CLI and REST interfaces for a module. Examples from various Cosmos SDK modules are included.
 :::
 
-:::note Pre-requisite Readings
+::: note Pre-requisite Readings
 
 * [CLI](https://docs.cosmos.network/main/core/cli)
 
