@@ -271,7 +271,7 @@ func (s *SystemUnderTest) AwaitNodeUp(t *testing.T, rpcAddr string) {
 	started := make(chan struct{})
 	go func() { // query for a non empty block on status page
 		t.Logf("Checking node status: %s\n", rpcAddr)
-		for {
+		for ; ; time.Sleep(10 * time.Millisecond) {
 			con, err := client.New(rpcAddr, "/websocket")
 			if err != nil || con.Start() != nil {
 				time.Sleep(time.Second)
@@ -279,12 +279,14 @@ func (s *SystemUnderTest) AwaitNodeUp(t *testing.T, rpcAddr string) {
 			}
 			result, err := con.Status(ctx)
 			if err != nil || result.SyncInfo.LatestBlockHeight < 1 {
+				// t.Logf("node status error: %v", err)
 				_ = con.Stop()
 				continue
 			}
 			t.Logf("Node started. Current block: %d\n", result.SyncInfo.LatestBlockHeight)
 			_ = con.Stop()
 			started <- struct{}{}
+			return
 		}
 	}()
 	select {
