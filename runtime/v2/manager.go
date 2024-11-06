@@ -661,7 +661,7 @@ func registerServices[T transaction.Tx](s appmodulev2.AppModule, app *App[T], re
 		wrapper := newStfRouterWrapper(app.msgRouterBuilder)
 		module.RegisterMsgHandlers(&wrapper)
 		if wrapper.error != nil {
-			return fmt.Errorf("unable to register handlers: %w", wrapper.error)
+			return fmt.Errorf("unable to register handler: %w", wrapper.error)
 		}
 	}
 
@@ -669,6 +669,9 @@ func registerServices[T transaction.Tx](s appmodulev2.AppModule, app *App[T], re
 	if module, ok := s.(appmodulev2.HasQueryHandlers); ok {
 		wrapper := newStfRouterWrapper(app.queryRouterBuilder)
 		module.RegisterQueryHandlers(&wrapper)
+		if wrapper.error != nil {
+			return fmt.Errorf("unable to register query handler: %w", wrapper.error)
+		}
 
 		for path, handler := range wrapper.handlers {
 			app.queryHandlers[path] = handler
@@ -875,10 +878,5 @@ func (s *stfRouterWrapper) RegisterHandler(handler appmodulev2.Handler) {
 	// register handler to stf router
 	err := s.stfRouter.RegisterHandler(requestName, handler.Func)
 	s.error = errors.Join(s.error, err)
-
-	// also make the decoder
-	if s.handlers == nil {
-		s.handlers = map[string]appmodulev2.Handler{}
-	}
 	s.handlers[requestName] = handler
 }
