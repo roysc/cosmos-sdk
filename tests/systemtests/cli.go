@@ -427,7 +427,7 @@ func RequireTxSuccess(t *testing.T, got string) {
 	require.Equal(t, int64(0), code, "non success tx code : %s", details)
 }
 
-// RequireTxFailure require the received response to contain any failure code and the passed msgsgs
+// RequireTxFailure require the received response to contain any failure code and the passed msgs
 func RequireTxFailure(t *testing.T, got string, containsMsgs ...string) {
 	t.Helper()
 	code, details := parseResultCode(t, got)

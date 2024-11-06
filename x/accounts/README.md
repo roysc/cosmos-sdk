@@ -71,8 +71,8 @@ message MsgInitResponse {}
 
 Next, we implement the Init method, which sets the initial counter. We also implement a method of the `Account` interface. This method:
 
-Signals to the x/accounts runtime what the Init entrypoint is
-Performs some generic operations to maintain type safety in the system
+* Signals to the x/accounts runtime what the Init entrypoint is
+* Performs some generic operations to maintain type safety in the system
 
 Here's the Go implementation:
 
