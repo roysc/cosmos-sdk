@@ -300,3 +300,7 @@ replace (
 	cosmossdk.io/store => ../../store
 	cosmossdk.io/store/v2 => ../../store/v2
 )
+
+replace (
+	cosmossdk.io/depinject => ../../depinject
+)
