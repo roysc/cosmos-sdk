@@ -22,7 +22,7 @@ func TestBankV2SendTxCmd(t *testing.T) {
 	cli := NewCLIWrapper(t, sut, verbose)
 
 	// get validator address
-	valAddr := gjson.Get(cli.Keys("keys", "list"), "1.address").String()
+	valAddr := gjson.Get(cli.Keys("keys", "list"), "0.address").String()
 	require.NotEmpty(t, valAddr)
 
 	// add new key
