@@ -155,7 +155,10 @@ func NewSimApp[T transaction.Tx](
 		&app.UpgradeKeeper,
 		&app.StakingKeeper)
 
-	if err := depinject.Inject(appConfig, outputs...); err != nil {
+	logfile := "/Users/roy/vulcanize/dump/laconic-debug/depinject_simapp.log"
+	if err := depinject.InjectDebug(
+		depinject.DebugOptions(depinject.FileLogger(logfile)),
+		appConfig, outputs...); err != nil {
 		return nil, err
 	}
 
