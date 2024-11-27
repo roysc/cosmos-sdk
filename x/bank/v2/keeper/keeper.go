@@ -88,7 +88,7 @@ func (k Keeper) MintCoins(ctx context.Context, addr []byte, amounts sdk.Coins) e
 }
 
 // SendCoins transfers amt coins from a sending account to a receiving account.
-// Function take sender & receipient as []byte.
+// Function take sender & recipient as []byte.
 // They can be sdk address or module name.
 // An error is returned upon failure.
 func (k Keeper) SendCoins(ctx context.Context, from, to []byte, amt sdk.Coins) error {
@@ -250,7 +250,9 @@ func newBalancesIndexes(sb *collections.SchemaBuilder) BalancesIndexes {
 		Denom: indexes.NewReversePair[math.Int](
 			sb, types.DenomAddressPrefix, "address_by_denom_index",
 			collections.PairKeyCodec(collections.BytesKey, collections.StringKey),
-			indexes.WithReversePairUncheckedValue(), // denom to address indexes were stored as Key: Join(denom, address) Value: []byte{0}, this will migrate the value to []byte{} in a lazy way.
+			// denom to address indexes were stored as Key: Join(denom, address) Value: []byte{0},
+			// this will migrate the value to []byte{} in a lazy way.
+			indexes.WithReversePairUncheckedValue(),
 		),
 	}
 }

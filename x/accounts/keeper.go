@@ -183,8 +183,8 @@ func (k Keeper) initFromMsg(ctx context.Context, initMsg *v1.MsgInit) (transacti
 	return k.Init(ctx, initMsg.AccountType, creator, msg, initMsg.Funds)
 }
 
-// init initializes the account, given the type, the creator the newly created account number, its address and the
-// initialization message.
+// init initializes the account, given the type, the creator, the newly created account number, its
+// address and the initialization message.
 func (k Keeper) init(
 	ctx context.Context,
 	accountType string,
