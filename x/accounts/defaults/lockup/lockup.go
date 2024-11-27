@@ -328,7 +328,7 @@ func (bva *BaseLockup) SendCoins(
 func (bva *BaseLockup) checkSender(ctx context.Context, sender []byte) error {
 	owner, err := bva.Owner.Get(ctx)
 	if err != nil {
-		return sdkerrors.ErrInvalidAddress.Wrapf("invalid owner address: %s", err.Error())
+		return sdkerrors.ErrInvalidAddress.Wrapf("invalid owner address: %s", err)
 	}
 	if !bytes.Equal(owner, sender) {
 		return errors.New("sender is not the owner of this vesting account")
