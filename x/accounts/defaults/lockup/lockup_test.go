@@ -73,7 +73,7 @@ func TestTrackingDelegation(t *testing.T) {
 		lockedCoins            sdk.Coins
 		expDelegatedLockingAmt sdk.Coins
 		expDelegatedFreeAmt    sdk.Coins
-		malaete                func(ctx context.Context, bv *BaseLockup)
+		delegate               func(ctx context.Context, bv *BaseLockup)
 		expErr                 error
 	}{
 		{
@@ -144,8 +144,8 @@ func TestTrackingDelegation(t *testing.T) {
 	for _, test := range testcases {
 		baseLockup := setup(t, ctx, ss)
 
-		if test.malaete != nil {
-			test.malaete(ctx, baseLockup)
+		if test.delegate != nil {
+			test.delegate(ctx, baseLockup)
 		}
 
 		err := baseLockup.TrackDelegation(ctx, mockBalances, test.lockedCoins, test.amt)
@@ -234,7 +234,7 @@ func TestGetNotBondedLockedCoin(t *testing.T) {
 		name        string
 		lockedCoin  sdk.Coin
 		expLockCoin sdk.Coin
-		malaete     func(ctx context.Context, bv *BaseLockup)
+		delegate    func(ctx context.Context, bv *BaseLockup)
 	}{
 		{
 			"locked amount less than delegated locking amount",
@@ -258,7 +258,7 @@ func TestGetNotBondedLockedCoin(t *testing.T) {
 
 	for _, test := range testcases {
 		baseLockup := setup(t, ctx, ss)
-		test.malaete(ctx, baseLockup)
+		test.delegate(ctx, baseLockup)
 
 		lockedCoin, err := baseLockup.GetNotBondedLockedCoin(ctx, test.lockedCoin, "test")
 		require.NoError(t, err)
