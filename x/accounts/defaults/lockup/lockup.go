@@ -384,11 +384,11 @@ func (bva *BaseLockup) WithdrawUnlockedCoins(
 func (bva *BaseLockup) checkSender(ctx context.Context, sender string) error {
 	owner, err := bva.Owner.Get(ctx)
 	if err != nil {
-		return sdkerrors.ErrInvalidAddress.Wrapf("invalid owner address: %s", err.Error())
+		return sdkerrors.ErrInvalidAddress.Wrapf("invalid owner address: %s", err)
 	}
 	senderBytes, err := bva.addressCodec.StringToBytes(sender)
 	if err != nil {
-		return sdkerrors.ErrInvalidAddress.Wrapf("invalid sender address: %s", err.Error())
+		return sdkerrors.ErrInvalidAddress.Wrapf("invalid sender address: %s", err)
 	}
 	if !bytes.Equal(owner, senderBytes) {
 		return errors.New("sender is not the owner of this vesting account")

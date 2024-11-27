@@ -38,7 +38,7 @@ type ContinuousLockingAccount struct {
 
 func (cva ContinuousLockingAccount) Init(ctx context.Context, msg *lockuptypes.MsgInitLockupAccount) (*lockuptypes.MsgInitLockupAccountResponse, error) {
 	if msg.EndTime.IsZero() {
-		return nil, sdkerrors.ErrInvalidRequest.Wrapf("invalid end time %s", msg.EndTime.String())
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("invalid end time %s", msg.EndTime)
 	}
 
 	if !msg.EndTime.After(msg.StartTime) {
