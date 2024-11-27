@@ -69,7 +69,7 @@ message MsgInit {
 message MsgInitResponse {}
 ```
 
-Next, we implement the Init method, which sets the initial counter. We also implement a method of the `Account` interface. This method:
+Next, we implement the `Init` method, which sets the initial counter. We also implement a method of the `Account` interface: `RegisterInitHandler`. This method:
 
 * Signals to the x/accounts runtime what the Init entrypoint is
 * Performs some generic operations to maintain type safety in the system
@@ -81,6 +81,7 @@ package counter
 
 import (
     "context"
+	"cosmossdk.io/collections"
     "cosmossdk.io/x/accounts/accountstd"
 )
 
@@ -169,12 +170,12 @@ func (a Account) RegisterInitHandler(builder *accountstd.InitBuilder) {
 }
 ```
 
-This implementation defines an IncreaseCounter method that handles the MsgIncreaseCounter message, updating the counter
-value and returning the new value in the response.
+This implementation defines an `IncreaseCounter` method that handles the `MsgIncreaseCounter`
+message, updating the counter value and returning the new value in the response.
 
 #### Query Handlers
 
-Query Handlers are read-only methods implemented by an account to expose information about itself. This information can be accessed by:
+Query handlers are read-only methods implemented by an account to expose information about itself. This information can be accessed by:
 
 * External clients (e.g., CLI, wallets)
 * Other modules and accounts within the system
@@ -299,7 +300,7 @@ func NewApp() *App {
 
 ### Manual Method
 
-Add the account to the x/accounts Keeper:
+Add the account to the `x/accounts` Keeper:
 
 ```go
 accountsKeeper, err := accounts.NewKeeper(
@@ -352,7 +353,7 @@ Some examples can be found in the [defaults](./defaults) package.
 
 ## The Authentication Interface
 
-x/accounts introduces the `Authentication` interface, allowing for flexible transaction (TX) authentication beyond traditional public key cryptography.
+x/accounts introduces the `Authentication` interface, allowing for flexible transaction authentication beyond traditional public key cryptography.
 
 Chain developers can implement tailored authentication methods for their accounts. Any account that implements the `Authentication` interface can be authenticated within a transaction.
 
@@ -368,7 +369,7 @@ https://github.com/cosmos/cosmos-sdk/blob/main/x/accounts/proto/cosmos/accounts/
 
 #### AnteHandler in the SDK
 
-The Cosmos SDK utilizes an `AnteHandler` to verify transaction (TX) integrity. Its primary function is to ensure that the messages within a transaction are correctly signed by the purported sender.
+The Cosmos SDK utilizes an `AnteHandler` to verify transaction integrity. Its primary function is to ensure that the messages within a transaction are correctly signed by the purported sender.
 
 #### Authentication Flow for x/accounts Module
 
@@ -504,7 +505,7 @@ The x/accounts module offers two methods for deriving addresses, both ensuring n
 
 When creating an account via `MsgInit`, you can provide an `address_seed`. The address is derived using:
 
-```bash
+```
 address = sha256(ModuleName || address_seed || creator_address)
 ```
 

@@ -20,7 +20,7 @@ The x/accounts/defaults/lockup module provides the implementation for lockup acc
 
 ### BaseLockup
 
-The base lockup account is used by all default lockup accounts. It contains the basic information for a lockup account. The Base lockup account keeps knowledge of the staking delegations from the account.
+The base lockup account is used by all default lockup accounts. It contains the basic information for a lockup account. The base lockup account keeps knowledge of the staking delegations from the account.
 
 ```go
 type BaseLockup struct {
