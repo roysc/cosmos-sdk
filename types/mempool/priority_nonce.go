@@ -43,6 +43,9 @@ type (
 
 		// SignerExtractor is an implementation which retrieves signer data from a sdk.Tx
 		SignerExtractor SignerExtractionAdapter
+
+		// AddressToKey converts an sdk.AccAddress to a string key for use in maps.
+		AddressToKey func(sdk.AccAddress) string
 	}
 
 	// PriorityNonceMempool is a mempool implementation that stores txs
@@ -121,6 +124,7 @@ func DefaultPriorityNonceMempoolConfig() PriorityNonceMempoolConfig[int64] {
 	return PriorityNonceMempoolConfig[int64]{
 		TxPriority:      NewDefaultTxPriority(),
 		SignerExtractor: NewDefaultSignerExtractionAdapter(),
+		AddressToKey:    defaultAddressToKey,
 	}
 }
 
@@ -163,6 +167,9 @@ func skiplistComparable[C comparable](txPriority TxPriority[C]) skiplist.Compara
 func NewPriorityMempool[C comparable](cfg PriorityNonceMempoolConfig[C]) *PriorityNonceMempool[C] {
 	if cfg.SignerExtractor == nil {
 		cfg.SignerExtractor = NewDefaultSignerExtractionAdapter()
+	}
+	if cfg.AddressToKey == nil {
+		cfg.AddressToKey = defaultAddressToKey
 	}
 	mp := &PriorityNonceMempool[C]{
 		priorityIndex:  skiplist.New(skiplistComparable(cfg.TxPriority)),
@@ -220,7 +227,7 @@ func (mp *PriorityNonceMempool[C]) Insert(ctx context.Context, tx sdk.Tx) error 
 	}
 
 	sig := sigs[0]
-	sender := sig.Signer.String()
+	sender := mp.cfg.AddressToKey(sig.Signer)
 	priority := mp.cfg.TxPriority.GetTxPriority(ctx, tx)
 	nonce := sig.Sequence
 
@@ -466,7 +473,7 @@ func (mp *PriorityNonceMempool[C]) Remove(tx sdk.Tx) error {
 	}
 
 	sig := sigs[0]
-	sender := sig.Signer.String()
+	sender := mp.cfg.AddressToKey(sig.Signer)
 	nonce := sig.Sequence
 
 	// if it's an unordered tx, we use the timeout timestamp instead of the nonce

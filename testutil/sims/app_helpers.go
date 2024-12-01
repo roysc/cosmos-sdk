@@ -11,6 +11,7 @@ import (
 	cmtjson "github.com/cometbft/cometbft/libs/json"
 	cmttypes "github.com/cometbft/cometbft/types"
 
+	"cosmossdk.io/core/address"
 	"cosmossdk.io/core/server"
 	corestore "cosmossdk.io/core/store"
 	coretesting "cosmossdk.io/core/testing"
@@ -140,12 +141,16 @@ func NextBlock(app *runtime.App, ctx sdk.Context, jumpTime time.Duration) (sdk.C
 func SetupWithConfiguration(appConfig depinject.Config, startupConfig StartupConfig, extraOutputs ...interface{}) (*runtime.App, error) {
 	// create the app with depinject
 	var (
-		app        *runtime.App
-		appBuilder *runtime.AppBuilder
-		codec      codec.Codec
+		app          *runtime.App
+		appBuilder   *runtime.AppBuilder
+		codec        codec.Codec
+		addrCodec    address.Codec
+		valAddrCodec address.ValidatorAddressCodec
 	)
 
-	if err := depinject.Inject(appConfig, append(extraOutputs, &appBuilder, &codec)...); err != nil {
+	if err := depinject.Inject(appConfig, append(
+		extraOutputs, &appBuilder, &codec, &addrCodec, &valAddrCodec,
+	)...); err != nil {
 		return nil, fmt.Errorf("failed to inject dependencies: %w", err)
 	}
 
@@ -170,10 +175,14 @@ func SetupWithConfiguration(appConfig depinject.Config, startupConfig StartupCon
 	)
 	for _, ga := range startupConfig.GenesisAccounts {
 		genAccounts = append(genAccounts, ga.GenesisAccount)
-		balances = append(balances, banktypes.Balance{Address: ga.GenesisAccount.GetAddress().String(), Coins: ga.Coins})
+		accAddr, err := addrCodec.BytesToString(ga.GenesisAccount.GetAddress())
+		if err != nil {
+			return nil, fmt.Errorf("failed to convert account address: %w", err)
+		}
+		balances = append(balances, banktypes.Balance{Address: accAddr, Coins: ga.Coins})
 	}
 
-	genesisState, err := GenesisStateWithValSet(codec, app.DefaultGenesis(), valSet, genAccounts, balances...)
+	genesisState, err := GenesisStateWithValSet(codec, addrCodec, valAddrCodec, app.DefaultGenesis(), valSet, genAccounts, balances...)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create genesis state: %w", err)
 	}
@@ -211,6 +220,8 @@ func SetupWithConfiguration(appConfig depinject.Config, startupConfig StartupCon
 // GenesisStateWithValSet returns a new genesis state with the validator set
 func GenesisStateWithValSet(
 	codec codec.Codec,
+	addrCodec address.Codec,
+	valAddrCodec address.ValidatorAddressCodec,
 	genesisState map[string]json.RawMessage,
 	valSet *cmttypes.ValidatorSet,
 	genAccs []authtypes.GenesisAccount,
@@ -236,8 +247,12 @@ func GenesisStateWithValSet(
 			return nil, fmt.Errorf("failed to create new any: %w", err)
 		}
 
+		valAddr, err := valAddrCodec.BytesToString(val.Address)
+		if err != nil {
+			return nil, fmt.Errorf("failed to convert validator address: %w", err)
+		}
 		validator := stakingtypes.Validator{
-			OperatorAddress:   sdk.ValAddress(val.Address).String(),
+			OperatorAddress:   valAddr,
 			ConsensusPubkey:   pkAny,
 			Jailed:            false,
 			Status:            stakingtypes.Bonded,
@@ -249,9 +264,12 @@ func GenesisStateWithValSet(
 			Commission:        stakingtypes.NewCommission(sdkmath.LegacyZeroDec(), sdkmath.LegacyZeroDec(), sdkmath.LegacyZeroDec()),
 			MinSelfDelegation: sdkmath.ZeroInt(),
 		}
+		accAddr, err := addrCodec.BytesToString(genAccs[0].GetAddress())
+		if err != nil {
+			return nil, fmt.Errorf("failed to convert account address: %w", err)
+		}
 		validators = append(validators, validator)
-		delegations = append(delegations, stakingtypes.NewDelegation(genAccs[0].GetAddress().String(), sdk.ValAddress(val.Address).String(), sdkmath.LegacyOneDec()))
-
+		delegations = append(delegations, stakingtypes.NewDelegation(accAddr, valAddr, sdkmath.LegacyOneDec()))
 	}
 
 	// set validators and delegations
@@ -270,8 +288,12 @@ func GenesisStateWithValSet(
 	}
 
 	// add bonded amount to bonded pool module account
+	poolModAddr, err := addrCodec.BytesToString(authtypes.NewModuleAddress(stakingtypes.BondedPoolName))
+	if err != nil {
+		return nil, fmt.Errorf("failed to convert module address: %w", err)
+	}
 	balances = append(balances, banktypes.Balance{
-		Address: authtypes.NewModuleAddress(stakingtypes.BondedPoolName).String(),
+		Address: poolModAddr,
 		Coins:   sdk.Coins{sdk.NewCoin(sdk.DefaultBondDenom, bondAmt.MulRaw(int64(len(delegations))))},
 	})
 

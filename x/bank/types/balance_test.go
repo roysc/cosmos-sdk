@@ -9,6 +9,7 @@ import (
 	"cosmossdk.io/math"
 	bank "cosmossdk.io/x/bank/types"
 
+	"github.com/cosmos/cosmos-sdk/codec/address"
 	codectestutil "github.com/cosmos/cosmos-sdk/codec/testutil"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -104,9 +105,10 @@ func TestBalanceValidate(t *testing.T) {
 		},
 	}
 
+	ac := address.NewBech32Codec("cosmos")
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			err := tc.balance.Validate()
+			err := tc.balance.Validate(ac)
 
 			if tc.expErr {
 				require.Error(t, err)

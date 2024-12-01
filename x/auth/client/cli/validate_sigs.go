@@ -108,6 +108,11 @@ func printAndValidateSigs(
 			sigSanity = "ERROR: signature does not match its respective signer"
 			success = false
 		}
+		addrStr, err := clientCtx.AddressCodec.BytesToString(sigAddr)
+		if err != nil {
+			cmd.PrintErrf("failed to encode address: %s\n", sigAddr)
+			return false
+		}
 
 		// validate the actual signature over the transaction bytes since we can
 		// reach out to a full node to query accounts.
@@ -149,7 +154,7 @@ func printAndValidateSigs(
 			}
 		}
 
-		cmd.Printf("  %d: %s\t\t\t[%s]%s%s\n", i, sigAddr.String(), sigSanity, multiSigHeader, multiSigMsg)
+		cmd.Printf("  %d: %s\t\t\t[%s]%s%s\n", i, addrStr, sigSanity, multiSigHeader, multiSigMsg)
 	}
 
 	cmd.Println("")

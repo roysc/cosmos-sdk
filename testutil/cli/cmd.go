@@ -103,12 +103,7 @@ func SubmitTestTx(clientCtx client.Context, msg proto.Message, from sdk.AccAddre
 			WithSequence(accSeq)
 	}
 
-	accBytes, err := clientCtx.AddressCodec.StringToBytes(from.String())
-	if err != nil {
-		return nil, err
-	}
-
-	keyRecord, err := clientCtx.Keyring.KeyByAddress(accBytes)
+	keyRecord, err := clientCtx.Keyring.KeyByAddress(from)
 	if err != nil {
 		return nil, err
 	}

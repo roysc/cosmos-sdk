@@ -130,8 +130,12 @@ func ShowAddressCmd() *cobra.Command {
 			privValidator := pvm.LoadFilePV(cfg.PrivValidatorKeyFile(), cfg.PrivValidatorStateFile())
 			// TODO: use address codec?
 			valConsAddr := (sdk.ConsAddress)(privValidator.GetAddress())
-
-			cmd.Println(valConsAddr.String())
+			clientCtx := client.GetClientContextFromCmd(cmd)
+			addrStr, err := clientCtx.ConsensusAddressCodec.BytesToString(valConsAddr)
+			if err != nil {
+				return err
+			}
+			cmd.Println(addrStr)
 			return nil
 		},
 	}

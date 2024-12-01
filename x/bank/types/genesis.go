@@ -5,14 +5,14 @@ import (
 	"errors"
 	"fmt"
 
+	"cosmossdk.io/core/address"
 	"cosmossdk.io/core/codec"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // Validate performs basic validation of supply genesis data returning an
 // error for any failed validation criteria.
-func (gs GenesisState) Validate() error {
+func (gs GenesisState) Validate(addrCodec address.Codec) error {
 	if len(gs.Params.SendEnabled) > 0 && len(gs.SendEnabled) > 0 {
 		return errors.New("send_enabled defined in both the send_enabled field and in params (deprecated)")
 	}
@@ -42,7 +42,7 @@ func (gs GenesisState) Validate() error {
 			return fmt.Errorf("duplicate balance for address %s", balance.Address)
 		}
 
-		if err := balance.Validate(); err != nil {
+		if err := balance.Validate(addrCodec); err != nil {
 			return err
 		}
 

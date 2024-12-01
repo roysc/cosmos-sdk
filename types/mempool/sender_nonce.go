@@ -102,6 +102,10 @@ func (snm *SenderNonceMempool) setSeed(seed int64) {
 	snm.rnd = rand.New(s1) //#nosec // math/rand is seeded from crypto/rand by default
 }
 
+func (snm *SenderNonceMempool) addressToKey(addr sdk.AccAddress) string {
+	return string(addr.Bytes())
+}
+
 // NextSenderTx returns the next transaction for a given sender by nonce order,
 // i.e. the next valid transaction for the sender. If no such transaction exists,
 // nil will be returned.
@@ -136,7 +140,7 @@ func (snm *SenderNonceMempool) Insert(_ context.Context, tx sdk.Tx) error {
 	}
 
 	sig := sigs[0]
-	sender := sdk.AccAddress(sig.PubKey.Address()).String()
+	sender := snm.addressToKey(sdk.AccAddress(sig.PubKey.Address()))
 	nonce := sig.Sequence
 
 	// if it's an unordered tx, we use the timeout timestamp instead of the nonce
@@ -233,7 +237,7 @@ func (snm *SenderNonceMempool) Remove(tx sdk.Tx) error {
 	}
 
 	sig := sigs[0]
-	sender := sdk.AccAddress(sig.PubKey.Address()).String()
+	sender := snm.addressToKey(sdk.AccAddress(sig.PubKey.Address()))
 	nonce := sig.Sequence
 
 	// if it's an unordered tx, we use the timeout timestamp instead of the nonce

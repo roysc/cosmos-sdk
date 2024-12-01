@@ -8,6 +8,7 @@ import (
 
 	"cosmossdk.io/math"
 
+	"github.com/cosmos/cosmos-sdk/codec/address"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -145,9 +146,10 @@ func TestGenesisStateValidate(t *testing.T) {
 		},
 	}
 
+	ac := address.NewBech32Codec("cosmos")
 	for _, tc := range testCases {
 		t.Run(tc.name, func(tt *testing.T) {
-			err := tc.genesisState.Validate()
+			err := tc.genesisState.Validate(ac)
 
 			if tc.expErr {
 				require.Error(tt, err)

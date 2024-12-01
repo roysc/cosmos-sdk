@@ -137,10 +137,14 @@ func (dfd *DeductFeeDecorator) checkDeductFee(ctx context.Context, feeTx sdk.Fee
 		}
 	}
 
+	deducteeAddr, err := dfd.accountKeeper.AddressCodec().BytesToString(deductFeesFrom)
+	if err != nil {
+		return errorsmod.Wrap(err, "failed to decode fee payer address")
+	}
 	if err := dfd.accountKeeper.GetEnvironment().EventService.EventManager(ctx).EmitKV(
 		sdk.EventTypeTx,
 		event.NewAttribute(sdk.AttributeKeyFee, fee.String()),
-		event.NewAttribute(sdk.AttributeKeyFeePayer, sdk.AccAddress(deductFeesFrom).String()),
+		event.NewAttribute(sdk.AttributeKeyFeePayer, deducteeAddr),
 	); err != nil {
 		return err
 	}

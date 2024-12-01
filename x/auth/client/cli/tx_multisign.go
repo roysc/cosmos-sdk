@@ -147,11 +147,15 @@ func makeMultiSignCmd() func(cmd *cobra.Command, args []string) (err error) {
 				if err != nil {
 					return err
 				}
+				addrStr, err := clientCtx.AddressCodec.BytesToString(sig.PubKey.Address())
+				if err != nil {
+					return err
+				}
 				txSignerData := txsigning.SignerData{
 					ChainID:       txFactory.ChainID(),
 					AccountNumber: txFactory.AccountNumber(),
 					Sequence:      txFactory.Sequence(),
-					Address:       sdk.AccAddress(sig.PubKey.Address()).String(),
+					Address:       addrStr,
 					PubKey: &anypb.Any{
 						TypeUrl: anyPk.TypeUrl,
 						Value:   anyPk.Value,
@@ -327,11 +331,15 @@ func makeBatchMultisignCmd() func(cmd *cobra.Command, args []string) error {
 			if err != nil {
 				return err
 			}
+			addrStr, err := clientCtx.AddressCodec.BytesToString(pubKey.Address())
+			if err != nil {
+				return err
+			}
 			txSignerData := txsigning.SignerData{
 				ChainID:       txFactory.ChainID(),
 				AccountNumber: txFactory.AccountNumber(),
 				Sequence:      txFactory.Sequence(),
-				Address:       sdk.AccAddress(pubKey.Address()).String(),
+				Address:       addrStr,
 				PubKey: &anypb.Any{
 					TypeUrl: anyPk.TypeUrl,
 					Value:   anyPk.Value,

@@ -378,9 +378,12 @@ func (svd SigVerificationDecorator) verifySig(ctx context.Context, tx sdk.Tx, ac
 	}
 
 	anyPk, _ := codectypes.NewAnyWithValue(pubKey)
-
+	addrStr, err := svd.ak.AddressCodec().BytesToString(acc.GetAddress())
+	if err != nil {
+		return err
+	}
 	signerData := txsigning.SignerData{
-		Address:       acc.GetAddress().String(),
+		Address:       addrStr,
 		ChainID:       chainID,
 		AccountNumber: accNum,
 		Sequence:      sig.Sequence,
@@ -394,7 +397,7 @@ func (svd SigVerificationDecorator) verifySig(ctx context.Context, tx sdk.Tx, ac
 		return fmt.Errorf("expected tx to implement V2AdaptableTx, got %T", tx)
 	}
 	txData := adaptableTx.GetSigningTxData()
-	err := authsigning.VerifySignature(ctx, pubKey, signerData, sig.Data, svd.signModeHandler, txData)
+	err = authsigning.VerifySignature(ctx, pubKey, signerData, sig.Data, svd.signModeHandler, txData)
 	if err != nil {
 		var errMsg string
 		if OnlyLegacyAminoSigners(sig.Data) {
@@ -425,7 +428,12 @@ func (svd SigVerificationDecorator) setPubKey(ctx context.Context, acc sdk.Accou
 		// if we're not in simulation mode, and we do not have a valid pubkey
 		// for this signer, then we simply error.
 		if svd.ak.GetEnvironment().TransactionService.ExecMode(ctx) != transaction.ExecModeSimulate {
-			return fmt.Errorf("the account %s is without a pubkey and did not provide a pubkey in the tx to set it", acc.GetAddress().String())
+			err := fmt.Errorf("account is without a pubkey and did not provide a pubkey in the tx to set it")
+			addrStr, acErr := svd.ak.AddressCodec().BytesToString(acc.GetAddress())
+			if acErr == nil {
+				err = fmt.Errorf("%s: %s", err, addrStr)
+			}
+			return errors.Join(err, acErr)
 		}
 		// if we're in simulation mode, then we can populate the pubkey with the
 		// sim one and simply return.
