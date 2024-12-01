@@ -18,6 +18,7 @@ import (
 
 	bam "github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/cosmos/cosmos-sdk/codec/address"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	"github.com/cosmos/cosmos-sdk/testutil/mock"
@@ -57,6 +58,9 @@ func NewSimappWithCustomOptions(t *testing.T, isCheckTx bool, options SetupOptio
 	privVal := mock.NewPV()
 	pubKey, err := privVal.GetPubKey()
 	require.NoError(t, err)
+	addrCodec := address.NewBech32Codec(sdk.Bech32MainPrefix)
+	valCodec := address.NewBech32Codec(sdk.Bech32PrefixValAddr)
+
 	// create validator set with single validator
 	validator := cmttypes.NewValidator(pubKey, 1)
 	valSet := cmttypes.NewValidatorSet([]*cmttypes.Validator{validator})
@@ -71,7 +75,7 @@ func NewSimappWithCustomOptions(t *testing.T, isCheckTx bool, options SetupOptio
 
 	app := NewSimApp(options.Logger, options.DB, nil, true, options.AppOpts)
 	genesisState := app.DefaultGenesis()
-	genesisState, err = simtestutil.GenesisStateWithValSet(app.AppCodec(), genesisState, valSet, []authtypes.GenesisAccount{acc}, balance)
+	genesisState, err = simtestutil.GenesisStateWithValSet(app.AppCodec(), addrCodec, valCodec, genesisState, valSet, []authtypes.GenesisAccount{acc}, balance)
 	require.NoError(t, err)
 
 	if !isCheckTx {
@@ -123,8 +127,11 @@ func Setup(t *testing.T, isCheckTx bool) *SimApp {
 func SetupWithGenesisValSet(t *testing.T, valSet *cmttypes.ValidatorSet, genAccs []authtypes.GenesisAccount, balances ...banktypes.Balance) *SimApp {
 	t.Helper()
 
+	addrCodec := address.NewBech32Codec(sdk.Bech32MainPrefix)
+	valCodec := address.NewBech32Codec(sdk.Bech32PrefixValAddr)
+
 	app, genesisState := setup(true, 5)
-	genesisState, err := simtestutil.GenesisStateWithValSet(app.AppCodec(), genesisState, valSet, genAccs, balances...)
+	genesisState, err := simtestutil.GenesisStateWithValSet(app.AppCodec(), addrCodec, valCodec, genesisState, valSet, genAccs, balances...)
 	require.NoError(t, err)
 
 	stateBytes, err := json.MarshalIndent(genesisState, "", " ")
@@ -158,6 +165,8 @@ func GenesisStateWithSingleValidator(t *testing.T, app *SimApp) GenesisState {
 	privVal := mock.NewPV()
 	pubKey, err := privVal.GetPubKey()
 	require.NoError(t, err)
+	addrCodec := address.NewBech32Codec(sdk.Bech32MainPrefix)
+	valCodec := address.NewBech32Codec(sdk.Bech32PrefixValAddr)
 
 	// create validator set with single validator
 	validator := cmttypes.NewValidator(pubKey, 1)
@@ -174,7 +183,7 @@ func GenesisStateWithSingleValidator(t *testing.T, app *SimApp) GenesisState {
 	}
 
 	genesisState := app.DefaultGenesis()
-	genesisState, err = simtestutil.GenesisStateWithValSet(app.AppCodec(), genesisState, valSet, []authtypes.GenesisAccount{acc}, balances...)
+	genesisState, err = simtestutil.GenesisStateWithValSet(app.AppCodec(), addrCodec, valCodec, genesisState, valSet, []authtypes.GenesisAccount{acc}, balances...)
 	require.NoError(t, err)
 
 	return genesisState

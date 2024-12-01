@@ -147,7 +147,8 @@ func makeMultiSignCmd() func(cmd *cobra.Command, args []string) (err error) {
 					ChainID:       txFactory.ChainID(),
 					AccountNumber: txFactory.AccountNumber(),
 					Sequence:      txFactory.Sequence(),
-					Address:       sdk.AccAddress(sig.PubKey.Address()).String(),
+					// TODO use address.Codec
+					Address: sdk.AccAddress(sig.PubKey.Address()).String(),
 					PubKey: &anypb.Any{
 						TypeUrl: anyPk.TypeUrl,
 						Value:   anyPk.Value,
@@ -324,7 +325,8 @@ func makeBatchMultisignCmd() func(cmd *cobra.Command, args []string) error {
 				ChainID:       txFactory.ChainID(),
 				AccountNumber: txFactory.AccountNumber(),
 				Sequence:      txFactory.Sequence(),
-				Address:       sdk.AccAddress(pubKey.Address()).String(),
+				// TODO use address.Codec
+				Address: sdk.AccAddress(pubKey.Address()).String(),
 				PubKey: &anypb.Any{
 					TypeUrl: anyPk.TypeUrl,
 					Value:   anyPk.Value,

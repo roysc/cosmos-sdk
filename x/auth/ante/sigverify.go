@@ -380,8 +380,12 @@ func (svd SigVerificationDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simul
 		if !simulate && !ctx.IsReCheckTx() && ctx.IsSigverifyTx() {
 			anyPk, _ := codectypes.NewAnyWithValue(pubKey)
 
+			addrStr, err := svd.ak.AddressCodec().BytesToString(acc.GetAddress())
+			if err != nil {
+				return ctx, err
+			}
 			signerData := txsigning.SignerData{
-				Address:       acc.GetAddress().String(),
+				Address:       addrStr,
 				ChainID:       chainID,
 				AccountNumber: accNum,
 				Sequence:      sig.Sequence,

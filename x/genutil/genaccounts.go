@@ -185,8 +185,12 @@ func AddGenesisAccounts(
 	balanceCache := make(map[string]banktypes.Balance)
 	for _, acc := range accs {
 		for _, balance := range bankGenState.GetBalances() {
-			if balance.Address == acc.GetAddress().String() {
-				balanceCache[acc.GetAddress().String()] = balance
+			addrStr, err := ac.BytesToString(acc.GetAddress())
+			if err != nil {
+				return err
+			}
+			if balance.Address == addrStr {
+				balanceCache[addrStr] = balance
 			}
 		}
 	}

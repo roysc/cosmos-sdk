@@ -7,6 +7,8 @@ import (
 
 	"cosmossdk.io/math"
 
+	"github.com/cosmos/cosmos-sdk/codec/address"
+	codectestutil "github.com/cosmos/cosmos-sdk/codec/testutil"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	bank "github.com/cosmos/cosmos-sdk/x/bank/types"
@@ -102,9 +104,10 @@ func TestBalanceValidate(t *testing.T) {
 		},
 	}
 
+	ac := address.NewBech32Codec("cosmos")
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			err := tc.balance.Validate()
+			err := tc.balance.Validate(ac)
 
 			if tc.expErr {
 				require.Error(t, err)
@@ -144,10 +147,13 @@ func TestSanitizeBalances(t *testing.T) {
 	coins := sdk.Coins{coin}
 	addrs, _ := makeRandomAddressesAndPublicKeys(20)
 
+	ac := codectestutil.CodecOptions{}.GetAddressCodec()
 	var balances []bank.Balance
 	for _, addr := range addrs {
+		addrStr, err := ac.BytesToString(addr)
+		require.NoError(t, err)
 		balances = append(balances, bank.Balance{
-			Address: addr.String(),
+			Address: addrStr,
 			Coins:   coins,
 		})
 	}

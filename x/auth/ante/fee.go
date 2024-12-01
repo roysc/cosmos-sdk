@@ -83,6 +83,10 @@ func (dfd DeductFeeDecorator) checkDeductFee(ctx sdk.Context, sdkTx sdk.Tx, fee 
 	feePayer := feeTx.FeePayer()
 	feeGranter := feeTx.FeeGranter()
 	deductFeesFrom := feePayer
+	deducteeAddr, err := dfd.accountKeeper.AddressCodec().BytesToString(deductFeesFrom)
+	if err != nil {
+		return errorsmod.Wrap(err, "failed to decode fee payer address")
+	}
 
 	// if feegranter set deduct fee from feegranter account.
 	// this works with only when feegrant enabled.
@@ -103,7 +107,7 @@ func (dfd DeductFeeDecorator) checkDeductFee(ctx sdk.Context, sdkTx sdk.Tx, fee 
 
 	deductFeesFromAcc := dfd.accountKeeper.GetAccount(ctx, deductFeesFrom)
 	if deductFeesFromAcc == nil {
-		return sdkerrors.ErrUnknownAddress.Wrapf("fee payer address: %s does not exist", deductFeesFrom)
+		return sdkerrors.ErrUnknownAddress.Wrapf("fee payer address: %s does not exist", deducteeAddr)
 	}
 
 	// deduct the fees
@@ -118,7 +122,7 @@ func (dfd DeductFeeDecorator) checkDeductFee(ctx sdk.Context, sdkTx sdk.Tx, fee 
 		sdk.NewEvent(
 			sdk.EventTypeTx,
 			sdk.NewAttribute(sdk.AttributeKeyFee, fee.String()),
-			sdk.NewAttribute(sdk.AttributeKeyFeePayer, sdk.AccAddress(deductFeesFrom).String()),
+			sdk.NewAttribute(sdk.AttributeKeyFeePayer, deducteeAddr),
 		),
 	}
 	ctx.EventManager().EmitEvents(events)

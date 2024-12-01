@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"sort"
 
+	"cosmossdk.io/core/address"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/bank/exported"
@@ -23,8 +25,8 @@ func (b Balance) GetCoins() sdk.Coins {
 }
 
 // Validate checks for address and coins correctness.
-func (b Balance) Validate() error {
-	if _, err := sdk.AccAddressFromBech32(b.Address); err != nil {
+func (b Balance) Validate(addrCodec address.Codec) error {
+	if _, err := addrCodec.StringToBytes(b.Address); err != nil {
 		return err
 	}
 

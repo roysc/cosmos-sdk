@@ -65,3 +65,5 @@ func (DefaultSignerExtractionAdapter) GetSigners(tx sdk.Tx) ([]SignerData, error
 
 	return signers, nil
 }
+
+func defaultAddressToKey(a sdk.AccAddress) string { return string(a.Bytes()) }
