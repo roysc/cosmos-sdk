@@ -1,11 +1,10 @@
 package log
 
 import (
+	"cmp"
 	"errors"
 	"fmt"
 	"strings"
-
-	"github.com/rs/zerolog"
 )
 
 const defaultLogLevelKey = "*"
@@ -23,7 +22,7 @@ type FilterFunc func(key, level string) bool
 //
 // This function attempts to keep the same behavior as the CometBFT ParseLogLevel
 // However the level `none` is replaced by `disabled`.
-func ParseLogLevel(levelStr string) (FilterFunc, error) {
+func ParseLogLevel[L cmp.Ordered](levelStr string, levelParser func(string) (L, error)) (FilterFunc, error) {
 	if levelStr == "" {
 		return nil, errors.New("empty log level")
 	}
@@ -35,7 +34,7 @@ func ParseLogLevel(levelStr string) (FilterFunc, error) {
 	}
 
 	// parse and validate the levels
-	filterMap := make(map[string]zerolog.Level)
+	filterMap := make(map[string]L)
 	list := strings.Split(l, ",")
 	for _, item := range list {
 		moduleAndLevel := strings.Split(item, ":")
@@ -50,7 +49,7 @@ func ParseLogLevel(levelStr string) (FilterFunc, error) {
 			return nil, fmt.Errorf("duplicate module %s in log level list %s", module, list)
 		}
 
-		zllevel, err := zerolog.ParseLevel(level)
+		zllevel, err := levelParser(level)
 		if err != nil {
 			return nil, fmt.Errorf("invalid log level %s in log level list %s", level, list)
 		}
@@ -59,21 +58,21 @@ func ParseLogLevel(levelStr string) (FilterFunc, error) {
 	}
 
 	filterFunc := func(key, lvl string) bool {
-		zllevel, ok := filterMap[key]
+		zllevelFilter, ok := filterMap[key]
 		if !ok { // no level filter for this key
 			// check if there is a default level filter
-			zllevel, ok = filterMap[defaultLogLevelKey]
+			zllevelFilter, ok = filterMap[defaultLogLevelKey]
 			if !ok {
 				return false
 			}
 		}
 
-		zllvl, err := zerolog.ParseLevel(lvl)
+		zllvl, err := levelParser(lvl)
 		if err != nil {
 			panic(err)
 		}
 
-		return zllvl < zllevel
+		return zllvl < zllevelFilter
 	}
 
 	return filterFunc, nil

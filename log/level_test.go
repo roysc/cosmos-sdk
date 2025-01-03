@@ -4,22 +4,23 @@ import (
 	"testing"
 
 	"cosmossdk.io/log"
+	"github.com/rs/zerolog"
 )
 
 func TestParseLogLevel(t *testing.T) {
-	_, err := log.ParseLogLevel("")
+	_, err := log.ParseLogLevel("", zerolog.ParseLevel)
 	if err == nil {
 		t.Errorf("expected error for empty log level, got nil")
 	}
 
 	level := "consensus:foo,mempool:debug,*:error"
-	_, err = log.ParseLogLevel(level)
+	_, err = log.ParseLogLevel(level, zerolog.ParseLevel)
 	if err == nil {
 		t.Errorf("expected error for invalid log level foo in log level list [consensus:foo mempool:debug *:error], got nil")
 	}
 
 	level = "consensus:debug,mempool:debug,*:error"
-	filter, err := log.ParseLogLevel(level)
+	filter, err := log.ParseLogLevel(level, zerolog.ParseLevel)
 	if err != nil {
 		t.Errorf("unexpected error: %v", err)
 	}
@@ -63,7 +64,7 @@ func TestParseLogLevel(t *testing.T) {
 	}
 
 	level = "error"
-	filter, err = log.ParseLogLevel(level)
+	filter, err = log.ParseLogLevel(level, zerolog.ParseLevel)
 	if err != nil {
 		t.Errorf("unexpected error: %v", err)
 	}

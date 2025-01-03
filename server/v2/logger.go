@@ -49,7 +49,7 @@ func NewLogger(cfg server.ConfigMap, out io.Writer) (log.Logger, error) {
 	switch {
 	case err != nil:
 		// If the log level is not a valid zerolog level, then we try to parse it as a key filter.
-		filterFunc, err := log.ParseLogLevel(level)
+		filterFunc, err := log.ParseLogLevel(level, zerolog.ParseLevel)
 		if err != nil {
 			return nil, err
 		}

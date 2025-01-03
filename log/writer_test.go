@@ -6,13 +6,14 @@ import (
 	"testing"
 
 	"cosmossdk.io/log"
+	"github.com/rs/zerolog"
 )
 
 func TestFilteredWriter(t *testing.T) {
 	buf := new(bytes.Buffer)
 
 	level := "consensus:debug,mempool:debug,*:error"
-	filter, err := log.ParseLogLevel(level)
+	filter, err := log.ParseLogLevel(level, zerolog.ParseLevel)
 	if err != nil {
 		t.Fatalf("failed to parse log level: %v", err)
 	}
