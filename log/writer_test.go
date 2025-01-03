@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"cosmossdk.io/log"
+	"github.com/rs/zerolog"
 )
 
 func TestFilteredWriter(t *testing.T) {

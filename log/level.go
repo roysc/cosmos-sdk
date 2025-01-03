@@ -1,6 +1,7 @@
 package log
 
 import (
+	"cmp"
 	"errors"
 	"fmt"
 	"strings"
@@ -14,8 +15,8 @@ const defaultLogLevelKey = "*"
 // When the filter returns true, the log entry is discarded.
 type FilterFunc func(key, level string) bool
 
-// ParseLogLevel parses complex log level
-// A comma-separated list of module:level pairs with an optional *:level pair
+// ParseLogLevelWithParser parses complex log levels formatted as
+// a comma-separated list of module:level pairs with an optional *:level pair
 // (* means all other modules).
 //
 // Example:
@@ -24,6 +25,20 @@ type FilterFunc func(key, level string) bool
 // This function attempts to keep the same behavior as the CometBFT ParseLogLevel
 // However the level `none` is replaced by `disabled`.
 func ParseLogLevel(levelStr string) (FilterFunc, error) {
+	return ParseLogLevelWithParser(levelStr, zerolog.ParseLevel)
+}
+
+// ParseLogLevelWithParser parses complex log levels formatted as
+// a comma-separated list of module:level pairs with an optional *:level pair
+// (* means all other modules).
+// The passed parser is used to parse individual level strings.
+//
+// Example:
+// ParseLogLevel("consensus:debug,mempool:debug,*:error", zerolog.ParseLevel)
+//
+// This function attempts to keep the same behavior as the CometBFT ParseLogLevel
+// However the level `none` is replaced by `disabled`.
+func ParseLogLevelWithParser[L cmp.Ordered](levelStr string, levelParser func(string) (L, error)) (FilterFunc, error) {
 	if levelStr == "" {
 		return nil, errors.New("empty log level")
 	}
@@ -35,7 +50,7 @@ func ParseLogLevel(levelStr string) (FilterFunc, error) {
 	}
 
 	// parse and validate the levels
-	filterMap := make(map[string]zerolog.Level)
+	filterMap := make(map[string]L)
 	list := strings.Split(l, ",")
 	for _, item := range list {
 		moduleAndLevel := strings.Split(item, ":")
@@ -50,7 +65,7 @@ func ParseLogLevel(levelStr string) (FilterFunc, error) {
 			return nil, fmt.Errorf("duplicate module %s in log level list %s", module, list)
 		}
 
-		zllevel, err := zerolog.ParseLevel(level)
+		zllevel, err := levelParser(level)
 		if err != nil {
 			return nil, fmt.Errorf("invalid log level %s in log level list %s", level, list)
 		}
@@ -59,21 +74,21 @@ func ParseLogLevel(levelStr string) (FilterFunc, error) {
 	}
 
 	filterFunc := func(key, lvl string) bool {
-		zllevel, ok := filterMap[key]
+		zllevelFilter, ok := filterMap[key]
 		if !ok { // no level filter for this key
 			// check if there is a default level filter
-			zllevel, ok = filterMap[defaultLogLevelKey]
+			zllevelFilter, ok = filterMap[defaultLogLevelKey]
 			if !ok {
 				return false
 			}
 		}
 
-		zllvl, err := zerolog.ParseLevel(lvl)
+		zllvl, err := levelParser(lvl)
 		if err != nil {
 			panic(err)
 		}
 
-		return zllvl < zllevel
+		return zllvl < zllevelFilter
 	}
 
 	return filterFunc, nil

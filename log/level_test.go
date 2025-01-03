@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"cosmossdk.io/log"
+	"github.com/rs/zerolog"
 )
 
 func TestParseLogLevel(t *testing.T) {
