@@ -78,13 +78,13 @@ func (b *Builder) AddMsgServiceCommands(cmd *cobra.Command, cmdDescriptor *autoc
 	methods := service.Methods()
 
 	rpcOptMap := map[protoreflect.Name]*autocliv1.RpcCommandOptions{}
-	for _, option := range cmdDescriptor.RpcCommandOptions {
-		methodName := protoreflect.Name(option.RpcMethod)
+	for _, options := range cmdDescriptor.RpcCommandOptions {
+		methodName := protoreflect.Name(options.RpcMethod)
 		// validate that methods exist
 		if m := methods.ByName(methodName); m == nil {
 			return fmt.Errorf("rpc method %q not found for service %q", methodName, service.FullName())
 		}
-		rpcOptMap[methodName] = option
+		rpcOptMap[methodName] = options
 
 	}
 
