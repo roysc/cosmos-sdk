@@ -61,6 +61,7 @@ type CometBFTServer[T transaction.Tx] struct {
 	serverOptions ServerOptions[T]
 	config        Config
 	cfgOptions    []CfgOption
+	nodeOptions   []node.Option
 
 	app     appmanager.AppManager[T]
 	txCodec transaction.Codec[T]
@@ -89,6 +90,7 @@ func New[T transaction.Tx](
 	decoderResolver decoding.DecoderResolver,
 	serverOptions ServerOptions[T],
 	cfg server.ConfigMap,
+	nodeOptions []node.Option,
 	cfgOptions ...CfgOption,
 ) (*CometBFTServer[T], error) {
 	srv := &CometBFTServer[T]{
@@ -97,6 +99,7 @@ func New[T transaction.Tx](
 		app:           app,
 		txCodec:       appCodecs.TxCodec,
 		store:         store,
+		nodeOptions:   nodeOptions,
 	}
 	srv.logger = logger.With(log.ModuleKey, srv.Name())
 
@@ -266,6 +269,7 @@ func (s *CometBFTServer[T]) Start(ctx context.Context) error {
 		cmtcfg.DefaultDBProvider,
 		node.DefaultMetricsProvider(s.config.ConfigTomlConfig.Instrumentation),
 		wrappedLogger,
+		s.nodeOptions...,
 	)
 	if err != nil {
 		return err
