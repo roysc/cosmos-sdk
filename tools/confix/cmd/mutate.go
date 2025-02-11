@@ -116,6 +116,8 @@ func GetCommand() *cobra.Command {
 				return fmt.Errorf("key %q not found", key)
 			} else if len(results) > 1 {
 				return fmt.Errorf("key %q is ambiguous", key)
+			} else if results[0].IsSection() {
+				return fmt.Errorf("entry %q is a section, not a key", key)
 			}
 
 			return clientCtx.PrintString(fmt.Sprintf("%s\n", results[0].Value.String()))
