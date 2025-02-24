@@ -874,7 +874,7 @@ func SetCoinDenomRegex(reFn func() string) {
 // ValidateDenom is the default validation function for Coin.Denom.
 func ValidateDenom(denom string) error {
 	if !reDnm.MatchString(denom) {
-		return fmt.Errorf("invalid denom: %s", denom)
+		return fmt.Errorf("invalid denom: '%s'", denom)
 	}
 	return nil
 }
