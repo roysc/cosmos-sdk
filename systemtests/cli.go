@@ -143,24 +143,11 @@ func (c CLIWrapper) WithChainID(newChainID string) CLIWrapper {
 }
 
 func (c CLIWrapper) clone(mutator ...func(r *CLIWrapper)) CLIWrapper {
-	r := NewCLIWrapperX(
-		c.t,
-		c.execBinary,
-		c.nodeAddress,
-		c.chainID,
-		c.awaitNextBlock,
-		c.nodesCount,
-		c.homeDir,
-		c.fees,
-		c.Debug,
-		c.assertErrorFn,
-		c.runSingleOutput,
-		c.expTXCommitted,
-	)
+	r := c
 	for _, m := range mutator {
-		m(r)
+		m(&r)
 	}
-	return *r
+	return r
 }
 
 // RunOnly just runs the command, returns the output. and does nothing else
