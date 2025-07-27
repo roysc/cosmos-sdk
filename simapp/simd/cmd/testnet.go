@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"time"
 
+	cmtcfg "github.com/cometbft/cometbft/config"
 	cmtconfig "github.com/cometbft/cometbft/config"
 	cmttime "github.com/cometbft/cometbft/types/time"
 	"github.com/spf13/cobra"
@@ -140,8 +141,7 @@ Example:
 				return err
 			}
 
-			serverCtx := server.GetServerContextFromCmd(cmd)
-			config := serverCtx.Config
+			config := cmtcfg.DefaultConfig()
 
 			args := initArgs{}
 			args.outputDir, _ = cmd.Flags().GetString(flagOutputDir)
