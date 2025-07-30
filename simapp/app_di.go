@@ -367,12 +367,12 @@ func GetMaccPerms() map[string][]string {
 	return dup
 }
 
-// BlockedAddresses returns all the app's blocked account addresses.
+// BlockedAddresses returns all the app's blocked account names.
 func BlockedAddresses() map[string]bool {
 	result := make(map[string]bool)
 
-	if len(blockAccAddrs) > 0 {
-		for _, addr := range blockAccAddrs {
+	if len(blockAccNames) > 0 {
+		for _, addr := range blockAccNames {
 			result[addr] = true
 		}
 	} else {

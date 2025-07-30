@@ -87,8 +87,8 @@ var (
 		{Account: protocolpooltypes.ProtocolPoolEscrowAccount},
 	}
 
-	// blocked account addresses
-	blockAccAddrs = []string{
+	// blocked account names
+	blockAccNames = []string{
 		authtypes.FeeCollectorName,
 		distrtypes.ModuleName,
 		minttypes.ModuleName,
@@ -207,7 +207,7 @@ var (
 		{
 			Name: banktypes.ModuleName,
 			Config: appconfig.WrapAny(&bankmodulev1.Module{
-				BlockedModuleAccountsOverride: blockAccAddrs,
+				BlockedModuleAccountsOverride: blockAccNames,
 			}),
 		},
 		{
