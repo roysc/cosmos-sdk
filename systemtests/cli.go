@@ -39,6 +39,7 @@ type CLIWrapper struct {
 	execBinary      string
 	nodesCount      int
 	runSingleOutput bool
+	stderr          io.Writer
 }
 
 // NewCLIWrapper constructor
@@ -115,6 +116,14 @@ func (c CLIWrapper) WithRunSingleOutput() CLIWrapper {
 	})
 }
 
+// WithRunStderrBuffer captures stderr output
+func (c CLIWrapper) WithRunStderr(writer io.Writer) CLIWrapper {
+	return c.clone(func(r *CLIWrapper) {
+		r.stderr = writer
+		r.runSingleOutput = true
+	})
+}
+
 func (c CLIWrapper) WithNodeAddress(nodeAddr string) CLIWrapper {
 	return c.clone(func(r *CLIWrapper) {
 		r.nodeAddress = nodeAddr
@@ -182,7 +191,7 @@ func (c CLIWrapper) Run(args ...string) string {
 	return rsp
 }
 
-// RunAndWait runs a cli command and waits for the server result when the TX is executed
+// RunAndWait runs a cli command and waits for the server result when the TX is executed.
 // It returns the result of the transaction.
 func (c CLIWrapper) RunAndWait(args ...string) string {
 	rsp := c.Run(args...)
@@ -192,7 +201,7 @@ func (c CLIWrapper) RunAndWait(args ...string) string {
 	return txResult
 }
 
-// RunCommandWithArgs use for run cli command, not tx
+// RunCommandWithArgs use for run non-tx cli command, or tx command expected to fail.
 func (c CLIWrapper) RunCommandWithArgs(args ...string) string {
 	c.t.Helper()
 	args = c.WithKeyringFlags(args...)
@@ -264,6 +273,9 @@ func (c CLIWrapper) runWithInput(args []string, input io.Reader) (output string,
 		cmd.Dir = WorkDir
 		cmd.Stdin = input
 
+		if c.stderr != nil {
+			cmd.Stderr = c.stderr
+		}
 		if c.runSingleOutput {
 			return cmd.Output()
 		}
@@ -361,7 +373,7 @@ func (c CLIWrapper) GetKeyAddr(name string) string {
 	return addr
 }
 
-// GetKeyAddrPrefix returns key address with Beach32 prefix encoding for a key (acc|val|cons)
+// GetKeyAddrPrefix returns key address with Bech32 prefix encoding for a key (acc|val|cons)
 func (c CLIWrapper) GetKeyAddrPrefix(name, prefix string) string {
 	cmd := c.WithKeyringFlags("keys", "show", name, "-a", "--bech="+prefix)
 	out, _ := c.run(cmd)

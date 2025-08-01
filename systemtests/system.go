@@ -158,7 +158,7 @@ func (s *SystemUnderTest) SetupChain() {
 	if err != nil {
 		panic(fmt.Sprintf("failed to set block max gas: %s", err))
 	}
-	s.withEachNodeHome(func(i int, home string) {
+	s.WithEachNodeHome(func(i int, home string) {
 		if err := saveGenesis(home, genesisBz); err != nil {
 			panic(err)
 		}
@@ -263,7 +263,7 @@ func (s *SystemUnderTest) AwaitUpgradeInfo(t *testing.T) {
 	t.Helper()
 	var found bool
 	for !found {
-		s.withEachNodeHome(func(i int, home string) {
+		s.WithEachNodeHome(func(i int, home string) {
 			_, err := os.Stat(filepath.Join(s.nodePath(0), "data", "upgrade-info.json"))
 			switch {
 			case err == nil:
@@ -527,7 +527,7 @@ func (s *SystemUnderTest) setGenesis(t *testing.T, srcPath string) {
 	_, err = io.Copy(&buf, in)
 	require.NoError(t, err)
 
-	s.withEachNodeHome(func(i int, home string) {
+	s.WithEachNodeHome(func(i int, home string) {
 		require.NoError(t, saveGenesis(home, buf.Bytes()))
 	})
 }
@@ -554,7 +554,7 @@ func saveGenesis(home string, content []byte) error {
 func (s *SystemUnderTest) ForEachNodeExecAndWait(t *testing.T, cmds ...[]string) [][]string {
 	t.Helper()
 	result := make([][]string, s.nodesCount)
-	s.withEachNodeHome(func(i int, home string) {
+	s.WithEachNodeHome(func(i int, home string) {
 		result[i] = make([]string, len(cmds))
 		for j, xargs := range cmds {
 			xargs = append(xargs, "--home", home)
@@ -590,7 +590,7 @@ func RunShellCmd(cmd string, args ...string) (string, error) {
 // startNodesAsync runs the given app cli command for all cluster nodes and returns without waiting
 func (s *SystemUnderTest) startNodesAsync(t *testing.T, xargs ...string) {
 	t.Helper()
-	s.withEachNodeHome(func(i int, home string) {
+	s.WithEachNodeHome(func(i int, home string) {
 		args := append(xargs, "--home="+home)
 		s.Logf("Execute `%s %s`\n", s.execBinary, strings.Join(args, " "))
 		cmd := exec.Command( //nolint:gosec // used by tests only
@@ -622,7 +622,7 @@ func (s *SystemUnderTest) awaitProcessCleanup(cmd *exec.Cmd) {
 	}()
 }
 
-func (s *SystemUnderTest) withEachNodeHome(cb func(i int, home string)) {
+func (s *SystemUnderTest) WithEachNodeHome(cb func(i int, home string)) {
 	for i := 0; i < s.nodesCount; i++ {
 		cb(i, s.nodePath(i))
 	}
