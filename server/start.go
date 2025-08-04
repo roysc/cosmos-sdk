@@ -124,6 +124,8 @@ type StartCmdOptions struct {
 	AddFlags func(cmd *cobra.Command)
 	// StartCommandHanlder can be used to customize the start command handler
 	StartCommandHandler func(svrCtx *Context, clientCtx client.Context, appCreator types.AppCreator, inProcessConsensus bool, opts StartCmdOptions) error
+	// CometNodeOptions are extra options used to initialize the CometBFT node.
+	CometNodeOptions []node.Option
 }
 
 // StartCmd runs the service passed in, either stand-alone or in-process with
@@ -303,8 +305,13 @@ func startStandAlone(svrCtx *Context, svrCfg serverconfig.Config, clientCtx clie
 	return g.Wait()
 }
 
-func startInProcess(svrCtx *Context, svrCfg serverconfig.Config, clientCtx client.Context, app types.Application,
-	metrics *telemetry.Metrics, opts StartCmdOptions,
+func startInProcess(
+	svrCtx *Context,
+	svrCfg serverconfig.Config,
+	clientCtx client.Context,
+	app types.Application,
+	metrics *telemetry.Metrics,
+	opts StartCmdOptions,
 ) error {
 	cmtCfg := svrCtx.Config
 	gRPCOnly := svrCtx.Viper.GetBool(flagGRPCOnly)
@@ -317,7 +324,7 @@ func startInProcess(svrCtx *Context, svrCfg serverconfig.Config, clientCtx clien
 		svrCfg.GRPC.Enable = true
 	} else {
 		svrCtx.Logger.Info("starting node with ABCI CometBFT in-process")
-		tmNode, cleanupFn, err := startCmtNode(ctx, cmtCfg, app, svrCtx)
+		tmNode, cleanupFn, err := startCmtNode(ctx, cmtCfg, app, svrCtx, opts.CometNodeOptions)
 		if err != nil {
 			return err
 		}
@@ -364,6 +371,7 @@ func startCmtNode(
 	cfg *cmtcfg.Config,
 	app types.Application,
 	svrCtx *Context,
+	cmtOptions []node.Option,
 ) (tmNode *node.Node, cleanupFn func(), err error) {
 	nodeKey, err := p2p.LoadOrGenNodeKey(cfg.NodeKeyFile())
 	if err != nil {
@@ -381,6 +389,7 @@ func startCmtNode(
 		cmtcfg.DefaultDBProvider,
 		node.DefaultMetricsProvider(cfg.Instrumentation),
 		servercmtlog.CometLoggerWrapper{Logger: svrCtx.Logger},
+		cmtOptions...,
 	)
 	if err != nil {
 		return tmNode, cleanupFn, err
