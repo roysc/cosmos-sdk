@@ -34,19 +34,19 @@ func TestUnorderedTXDuplicate(t *testing.T) {
 
 	// send tokens
 	cmd := []string{"tx", "bank", "send", account1Addr, account2Addr, "5000stake", "--from=" + account1Addr, "--fees=1stake", "--timeout-duration=5m", "--unordered", "--note=1", "--chain-id=testing", "--generate-only"}
-	rsp1 := cli.RunCommandWithArgs(cmd...)
+	rsp1 := cli.RunCommandWithArgs(cli.WithKeyringFlags(cmd...)...)
 	txFile := testutil.TempFile(t)
 	_, err := txFile.WriteString(rsp1)
 	require.NoError(t, err)
 
 	signCmd := []string{"tx", "sign", txFile.Name(), "--from=" + account1Addr, "--chain-id=testing"}
-	rsp1 = cli.RunCommandWithArgs(signCmd...)
+	rsp1 = cli.RunCommandWithArgs(cli.WithKeyringFlags(signCmd...)...)
 	signedFile := testutil.TempFile(t)
 	_, err = signedFile.WriteString(rsp1)
 	require.NoError(t, err)
 
 	cmd = []string{"tx", "broadcast", signedFile.Name(), "--chain-id=testing"}
-	rsp1 = cli.RunCommandWithArgs(cmd...)
+	rsp1 = cli.RunCommandWithArgs(cli.WithKeyringFlags(cmd...)...)
 	systest.RequireTxSuccess(t, rsp1)
 
 	cmd = []string{"tx", "broadcast", signedFile.Name(), "--chain-id=testing"}
@@ -61,7 +61,7 @@ func TestUnorderedTXDuplicate(t *testing.T) {
 	}, 10*systest.Sut.BlockTime(), 200*time.Millisecond, "TX was not executed before timeout")
 }
 
-func TestTxBackwardsCompatability(t *testing.T) {
+func TestTxBackwardsCompatibility(t *testing.T) {
 	// Scenario:
 	// A transaction generated from a v0.53 chain without unordered and timeout_timestamp flags set should succeed.
 	// Conversely, a transaction generated from a v0.53 chain with unordered and timeout_timestamp flags set should fail.

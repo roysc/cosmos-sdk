@@ -191,7 +191,6 @@ func (c CLIWrapper) RunAndWait(args ...string) string {
 // RunCommandWithArgs use for run non-tx cli command, or tx command expected to fail.
 func (c CLIWrapper) RunCommandWithArgs(args ...string) string {
 	c.t.Helper()
-	args = c.WithKeyringFlags(args...)
 	execOutput, _ := c.run(args)
 	return execOutput
 }
