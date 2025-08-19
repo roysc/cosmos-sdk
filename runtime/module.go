@@ -215,6 +215,7 @@ func ProvideKVStoreKey(config *runtimev1alpha1.Module, key depinject.ModuleKey, 
 
 	storeKey := storetypes.NewKVStoreKey(storeKeyName)
 	registerStoreKey(app, storeKey)
+
 	return storeKey
 }
 
@@ -242,18 +243,15 @@ func ProvideGenesisTxHandler(appBuilder *AppBuilder) genesis.TxHandler {
 	return appBuilder.app
 }
 
-func ProvideKVStoreService(config *runtimev1alpha1.Module, key depinject.ModuleKey, app *AppBuilder) store.KVStoreService {
-	storeKey := ProvideKVStoreKey(config, key, app)
+func ProvideKVStoreService(_ depinject.ModuleKey, storeKey *storetypes.KVStoreKey) store.KVStoreService {
 	return kvStoreService{key: storeKey}
 }
 
-func ProvideMemoryStoreService(config *runtimev1alpha1.Module, key depinject.ModuleKey, app *AppBuilder) store.MemoryStoreService {
-	storeKey := ProvideMemoryStoreKey(config, key, app)
+func ProvideMemoryStoreService(_ depinject.ModuleKey, storeKey *storetypes.MemoryStoreKey) store.MemoryStoreService {
 	return memStoreService{key: storeKey}
 }
 
-func ProvideTransientStoreService(config *runtimev1alpha1.Module, key depinject.ModuleKey, app *AppBuilder) store.TransientStoreService {
-	storeKey := ProvideTransientStoreKey(config, key, app)
+func ProvideTransientStoreService(_ depinject.ModuleKey, storeKey *storetypes.TransientStoreKey) store.TransientStoreService {
 	return transientStoreService{key: storeKey}
 }
 
